@@ -8,18 +8,28 @@ h1 {
     text-align: center;
 }
 
+#calendar-container {
+    display: flex;
+    justify-content: center;
+}
+
 #calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+    grid-gap: 10px;
     padding: 10px;
 }
 
-#calendar div {
+#calendar .day {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
     min-height: 100px;
+}
+
+#calendar .day-header {
+    font-weight: bold;
+    background-color: #f0f0f0;
 }
 
 form {
