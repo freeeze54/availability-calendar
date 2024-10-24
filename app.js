@@ -31,7 +31,7 @@ function renderCalendar(month, year) {
     calendarElement.innerHTML = ''; // Clear previous calendar
     
     // Add the header row with days of the week
-    const daysOfWeek = ["M", "T", "W", "T", "F", "S", "S"];
+    const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     daysOfWeek.forEach(day => {
         const dayHeader = document.createElement('div');
         dayHeader.classList.add('day', 'day-header');
@@ -39,20 +39,22 @@ function renderCalendar(month, year) {
         calendarElement.appendChild(dayHeader);
     });
 
-    // Get first day of the month
-    const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // Adjust so Monday is the first day of the week
-    let startDay = firstDayOfMonth - 1;
-    if (startDay < 0) startDay = 6; // Shift Sunday to the end
-
-    // Add blank divs for days before the 1st
-    for (let i = 0; i < startDay; i++) {
+    // Get the first day of the month and determine its weekday (0 = Sunday, 1 = Monday, etc.)
+    const firstDayOfMonth = new Date(year, month, 1);
+    let firstDayWeekday = firstDayOfMonth.getDay(); // 0 for Sunday
+    
+    // Adjust so that Monday is treated as the first day of the week (Sunday as the last)
+    firstDayWeekday = firstDayWeekday === 0 ? 6 : firstDayWeekday - 1; // Shift Sunday to the last spot
+    
+    // Add empty divs for days before the 1st of the month
+    for (let i = 0; i < firstDayWeekday; i++) {
         const blankDay = document.createElement('div');
         blankDay.classList.add('day');
         calendarElement.appendChild(blankDay);
     }
+
+    // Number of days in the month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     // Populate the calendar days
     for (let day = 1; day <= daysInMonth; day++) {
