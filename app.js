@@ -29,18 +29,43 @@ function isEngineerUnavailable(engineer, dateString) {
 function renderCalendar(month, year) {
     const calendarElement = document.getElementById('calendar');
     calendarElement.innerHTML = ''; // Clear previous calendar
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
     
+    // Add the header row with days of the week
+    const daysOfWeek = ["M", "T", "W", "T", "F", "S", "S"];
+    daysOfWeek.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.classList.add('day', 'day-header');
+        dayHeader.innerText = day;
+        calendarElement.appendChild(dayHeader);
+    });
+
+    // Get first day of the month
+    const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Adjust so Monday is the first day of the week
+    let startDay = firstDayOfMonth - 1;
+    if (startDay < 0) startDay = 6; // Shift Sunday to the end
+
+    // Add blank divs for days before the 1st
+    for (let i = 0; i < startDay; i++) {
+        const blankDay = document.createElement('div');
+        blankDay.classList.add('day');
+        calendarElement.appendChild(blankDay);
+    }
+
+    // Populate the calendar days
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const dayElement = document.createElement('div');
+        dayElement.classList.add('day');
         dayElement.innerText = day;
         
         if (isWeekend(date)) {
             dayElement.classList.add('weekend');
         }
-        
+
         if (isHoliday(dateString)) {
             dayElement.classList.add('holiday');
         }
@@ -53,32 +78,6 @@ function renderCalendar(month, year) {
         
         calendarElement.appendChild(dayElement);
     }
-}
-
-// Utility function to find the Monday before a date, avoiding weekends
-function getMondayBefore(date) {
-    const dayOfWeek = date.getDay();
-    const daysToSubtract = (dayOfWeek === 0) ? 6 : dayOfWeek - 1; // If Sunday, go back to the previous Monday
-    const travelMonday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysToSubtract);
-    
-    // Adjust if travelMonday lands on a weekend
-    while (isWeekend(travelMonday)) {
-        travelMonday.setDate(travelMonday.getDate() - 1);
-    }
-    return travelMonday;
-}
-
-// Utility function to find the Friday after a date, avoiding weekends
-function getFridayAfter(date) {
-    const dayOfWeek = date.getDay();
-    const daysToAdd = (dayOfWeek <= 5) ? 5 - dayOfWeek : 0;
-    const travelFriday = new Date(date.getFullYear(), date.getMonth(), date.getDate() + daysToAdd);
-    
-    // Adjust if travelFriday lands on a weekend
-    while (isWeekend(travelFriday)) {
-        travelFriday.setDate(travelFriday.getDate() + 1);
-    }
-    return travelFriday;
 }
 
 // Booking form logic with travel day handling
@@ -97,37 +96,12 @@ document.getElementById('booking-form').addEventListener('submit', function(even
 
     const startDate = new Date(newSchedule.date);
 
-    // Onsite engagements require travel days
-    if (newSchedule.type === 'On-Site') {
-        const travelMonday = getMondayBefore(startDate);
-        const endDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + newSchedule.duration - 1);
-        const travelFriday = getFridayAfter(endDate);
-
-        // Block travel days if they don't fall on holidays or weekends
-        if (!isHoliday(travelMonday.toISOString().split('T')[0]) && !isWeekend(travelMonday)) {
-            renderTravelDay(travelMonday, newSchedule.engineer, "Travel Day (Monday)");
-        }
-
-        if (!isHoliday(travelFriday.toISOString().split('T')[0]) && !isWeekend(travelFriday)) {
-            renderTravelDay(travelFriday, newSchedule.engineer, "Travel Day (Friday)");
-        }
-    }
-
     // Add the new schedule to the schedules array
     bookEngagement(newSchedule);
+    
     // Re-render the calendar after booking
     renderCalendar(today.getMonth(), today.getFullYear());
 });
-
-// Function to render a travel day
-function renderTravelDay(date, engineer, label) {
-    const dateString = date.toISOString().split('T')[0];
-    const dayElement = document.querySelector(`[data-date='${dateString}']`);
-    if (dayElement) {
-        dayElement.classList.add('travel-day');
-        dayElement.innerHTML += `<br>${engineer} - ${label}`;
-    }
-}
 
 // Function to book the engagement
 function bookEngagement(schedule) {
@@ -137,23 +111,15 @@ function bookEngagement(schedule) {
         currentDate.setDate(currentDate.getDate() + i);
         const dateString = currentDate.toISOString().split('T')[0];
         
-        // Block the actual engagement days
-        const dayElement = document.querySelector(`[data-date='${dateString}']`);
-        if (dayElement) {
-            dayElement.classList.add('engagement-day');
-            dayElement.innerHTML += `<br>${schedule.engineer} - ${schedule.company}`;
-        }
+        schedules.push({
+            date: dateString,
+            engineer: schedule.engineer,
+            company: schedule.company,
+            size: schedule.size,
+            type: schedule.type,
+            duration: schedule.duration
+        });
     }
-
-    // Add the schedule to the global schedules array
-    schedules.push({
-        date: schedule.date,
-        engineer: schedule.engineer,
-        company: schedule.company,
-        size: schedule.size,
-        type: schedule.type,
-        duration: schedule.duration
-    });
 }
 
 // Initial rendering of the calendar for the current month and year
