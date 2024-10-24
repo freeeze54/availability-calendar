@@ -7,6 +7,8 @@ const engineerAvailability = {
     "Bill": { "unavailableDates": ["2024-12-06", "2024-12-18"] },
 };
 
+let schedules = []; // Store booked consultations
+
 // Utility function to check if a date is a weekend
 function isWeekend(date) {
     const day = date.getDay();
@@ -41,6 +43,12 @@ function renderCalendar(month, year) {
         
         if (isHoliday(dateString)) {
             dayElement.classList.add('holiday');
+        }
+
+        const schedule = schedules.find(s => s.date === dateString);
+        if (schedule) {
+            dayElement.classList.add('engagement-day');
+            dayElement.innerHTML += `<br>${schedule.engineer} - ${schedule.company}`;
         }
         
         calendarElement.appendChild(dayElement);
@@ -105,9 +113,10 @@ document.getElementById('booking-form').addEventListener('submit', function(even
         }
     }
 
-    // Book the actual engagement
+    // Add the new schedule to the schedules array
     bookEngagement(newSchedule);
-    renderCalendar(new Date().getMonth(), new Date().getFullYear());
+    // Re-render the calendar after booking
+    renderCalendar(today.getMonth(), today.getFullYear());
 });
 
 // Function to render a travel day
@@ -135,6 +144,16 @@ function bookEngagement(schedule) {
             dayElement.innerHTML += `<br>${schedule.engineer} - ${schedule.company}`;
         }
     }
+
+    // Add the schedule to the global schedules array
+    schedules.push({
+        date: schedule.date,
+        engineer: schedule.engineer,
+        company: schedule.company,
+        size: schedule.size,
+        type: schedule.type,
+        duration: schedule.duration
+    });
 }
 
 // Initial rendering of the calendar for the current month and year
