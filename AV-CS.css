@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+
+#calendar div {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    min-height: 100px;
+}
+
+form {
+    margin: 20px auto;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin-bottom: 5px;
+}
+
+form input, form select, form button {
+    margin-bottom: 15px;
+}
+
+/* Color coding */
+.engagement-day {
+    background-color: lightgreen;
+}
+
+.travel-day {
+    background-color: lightblue;
+}
+
+.unavailable-day {
+    background-color: lightcoral;
+}
+
+.weekend {
+    background-color: #f0f0f0;
+}
+
+.holiday {
+    background-color: gold;
+}

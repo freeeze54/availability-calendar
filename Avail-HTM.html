@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Engineer Availability Calendar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Compliance Engineer Availability Calendar</h1>
+    
+    <div id="calendar">
+        <!-- Calendar grid will go here -->
+    </div>
+
+    <form id="booking-form">
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" name="start-date" required>
+
+        <label for="duration">Engagement Days:</label>
+        <select id="duration" name="duration" required>
+            <option value="2">2 Days</option>
+            <option value="3">3 Days</option>
+        </select>
+
+        <label for="size">Engagement Type:</label>
+        <select id="size" name="size" required>
+            <option value="Micro">Micro</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+        </select>
+
+        <label for="type">Consultation Type:</label>
+        <select id="type" name="type" required>
+            <option value="On-Site">On-Site</option>
+            <option value="Virtual">Virtual</option>
+        </select>
+
+        <label for="engineer">Compliance Engineer:</label>
+        <select id="engineer" name="engineer" required>
+            <option value="Anthony">Anthony</option>
+            <option value="Steven">Steven</option>
+            <option value="James">James</option>
+            <option value="Bill">Bill</option>
+        </select>
+
+        <label for="company">Company Name:</label>
+        <input type="text" id="company" name="company" required>
+
+        <button type="submit">Book Consultation</button>
+    </form>
+
+    <script src="app.js"></script>
+</body>
+</html>
